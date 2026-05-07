@@ -2,65 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GY-ENGINE // STRATEGIC COMMAND</title>
+  <title>MACRO-NODE TERMINAL // SANJEEV JHA</title>
   <script src="https://unpkg.com/globe.gl"></script>
   <style>
     :root { --neon: #00ffcc; --bg: #05070a; --panel: #0d1117; --border: #30363d; --red: #ff4444; }
     body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; color: #fff; }
     
     #header { position: absolute; top: 0; width: 100%; height: 50px; background: #000; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 100; box-sizing: border-box; }
-    #sidebar { position: absolute; top: 50px; right: -720px; width: 700px; height: calc(100vh - 50px); background: var(--panel); border-left: 2px solid var(--neon); z-index: 50; transition: 0.4s ease-in-out; overflow-y: auto; padding: 25px; box-sizing: border-box; }
-    #sidebar.active { right: 0; box-shadow: -15px 0 50px rgba(0, 255, 204, 0.1); }
+    #sidebar { position: absolute; top: 50px; right: -720px; width: 680px; height: calc(100vh - 50px); background: var(--panel); border-left: 2px solid var(--neon); z-index: 50; transition: 0.4s ease; overflow-y: auto; padding: 25px; box-sizing: border-box; }
+    #sidebar.active { right: 0; }
 
-    .country-red { color: var(--red); font-weight: bold; font-size: 32px; text-transform: uppercase; border-bottom: 2px solid var(--border); padding-bottom: 10px; display: block; }
+    .flex-header { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 10px; }
+    .country-red { color: var(--red); font-weight: bold; font-size: 32px; text-transform: uppercase; }
+    .flag-img { width: 50px; height: auto; border: 1px solid var(--border); }
+
     .label { color: #556; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 25px; display: block; border-left: 3px solid var(--neon); padding-left: 10px; }
+    .news-card { font-size: 12px; padding: 12px; background: #161b22; margin-top: 8px; border-left: 2px solid var(--border); border-radius: 2px; }
     
-    /* INVESTMENT TABLE */
-    .trade-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 12px; }
-    .trade-table th { text-align: left; color: #556; padding: 10px; border-bottom: 1px solid var(--border); }
-    .trade-table td { padding: 12px 10px; border-bottom: 1px solid #161b22; }
-    .risk-high { color: var(--red); font-weight: bold; }
-    .risk-low { color: var(--neon); font-weight: bold; }
-
-    .price-box { border: 1px solid var(--neon); padding: 20px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
-    .news-card { font-size: 12px; padding: 10px; background: #161b22; margin-top: 8px; border-left: 2px solid var(--border); }
+    .trade-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 11px; }
+    .trade-table td { padding: 10px; border-bottom: 1px solid #161b22; }
+    
+    .esg-box { margin-top: 20px; padding: 15px; background: rgba(0, 255, 204, 0.05); border: 1px solid var(--neon); color: var(--neon); font-weight: bold; text-align: center; }
   </style>
 </head>
 <body>
 
 <header id="header">
-  <div style="font-weight: bold; letter-spacing: 2px; color: var(--neon);">GY-ENGINE // STRATEGIC_AI_V3</div>
+  <div style="font-weight: bold; letter-spacing: 2px; color: var(--neon);">MACRO-NODE TERMINAL</div>
   <div style="font-size:11px; color:#556;">SYSTEM ARCHITECT: <b style="color:var(--neon)">SANJEEV JHA</b></div>
 </header>
 
 <aside id="sidebar">
-  <span id="country-out" class="country-red">STANDBY</span>
-  
-  <div id="loader" style="display:none; color:var(--neon); animation: blink 1s infinite; margin-top:20px;">INTERCEPTING GLOBAL MARKET DATA...</div>
+  <div class="flex-header">
+    <img id="flag-out" src="" class="flag-img" onerror="this.style.display='none'">
+    <span id="country-out" class="country-red">STANDBY</span>
+  </div>
+
+  <div id="loader" style="display:none; color:var(--neon); animation: blink 1s infinite;">SYNCHRONIZING REGIONAL DATA...</div>
 
   <div id="data-ui">
-    <span class="label">Top 5 Strategic Investment Picks (Stocks/Options/Futures)</span>
-    <table class="trade-table">
-      <thead>
-        <tr><th>#</th><th>ASSET NAME</th><th>INSTRUMENT</th><th>RISK LEVEL</th></tr>
-      </thead>
-      <tbody id="trade-list"></tbody>
-    </table>
+    <span class="label">Top 5 Business Headlines (Regional Feed)</span>
+    <div id="news-out"></div>
 
-    <span class="label">Primary Regional Benchmark</span>
-    <div class="price-box">
-      <div>
-        <div id="ticker-out" style="color:var(--neon); font-weight:bold;">--</div>
-        <div id="name-out" style="font-size:11px; color:#556;">--</div>
-      </div>
-      <div style="text-align:right">
-        <div id="price-out" style="font-size:32px; font-weight:bold;">0.00</div>
-        <div id="change-out" style="font-weight:bold;">--</div>
-      </div>
+    <span class="label">Primary Asset Performance: <span id="name-out" style="color:var(--neon)">--</span></span>
+    <div style="display: flex; justify-content: space-between; align-items: center; background: #000; padding: 20px; margin-top: 10px; border: 1px solid var(--border);">
+      <div><div id="ticker-out" style="font-size:12px; color:#556;">--</div><div id="price-out" style="font-size:32px; font-weight:bold;">0.00</div></div>
+      <div id="change-out" style="font-size:24px; font-weight:bold;">--</div>
     </div>
 
-    <span class="label">Top 5 Regional Headlines</span>
-    <div id="news-out"></div>
+    <div id="esg-out" class="esg-box">ESG & RENEWABLES STATUS: AWAITING UPLINK</div>
+
+    <span class="label">Strategic Portfolio Picks (Bonds / Options / Green Energy)</span>
+    <table class="trade-table">
+      <tbody id="trade-list"></tbody>
+    </table>
   </div>
 </aside>
 
@@ -89,29 +84,28 @@
       loader.style.display = 'none';
       dataUI.style.display = 'block';
 
-      // 1. Fill Trade Table
-      document.getElementById('trade-list').innerHTML = data.tradeIdeas.map(t => `
-        <tr>
-          <td>${t.id}</td>
-          <td>${t.asset}</td>
-          <td style="color:var(--neon)">${t.instrument}</td>
-          <td class="${t.risk === 'HIGH' ? 'risk-high' : 'risk-low'}">${t.risk}</td>
-        </tr>
-      `).join('');
-
-      // 2. Market Data
+      document.getElementById('flag-out').src = data.flag;
+      document.getElementById('flag-out').style.display = 'block';
+      document.getElementById('news-out').innerHTML = data.news.map(n => `<div class="news-card">${n}</div>`).join('');
       document.getElementById('ticker-out').innerText = data.ticker;
       document.getElementById('name-out').innerText = data.label;
       document.getElementById('price-out').innerText = "$" + data.price;
+      document.getElementById('esg-out').innerText = `ESG & RENEWABLES STATUS: ${data.esg}`;
+
       const change = parseFloat(data.change);
       document.getElementById('change-out').style.color = change >= 0 ? '#00ff00' : '#ff4444';
       document.getElementById('change-out').innerText = (change >= 0 ? "▲ " : "▼ ") + Math.abs(change) + "%";
 
-      // 3. News
-      document.getElementById('news-out').innerHTML = data.news.map(n => `<div class="news-card">${n}</div>`).join('');
+      document.getElementById('trade-list').innerHTML = data.trades.map(t => `
+        <tr>
+          <td><b style="color:var(--neon)">${t.asset}</b></td>
+          <td style="color:#556">${t.type}</td>
+          <td style="text-align:right"><b>${t.risk} RISK</b></td>
+        </tr>
+      `).join('');
 
     } catch (err) {
-      loader.innerText = "UPLINK FAILURE: TIMEOUT";
+      loader.innerText = "UPLINK ERROR: SATELLITE BLOCKED";
     }
   }
 
