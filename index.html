@@ -2,58 +2,48 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>GY-ENGINE // MACRO COMMAND</title>
+  <title>GY-ENGINE // STRATEGIC COMMAND</title>
   <script src="https://unpkg.com/globe.gl"></script>
   <style>
-    :root { --neon: #00ffcc; --bg: #05070a; --panel: #0a0d11; --border: #1a1e23; }
+    :root { --neon: #00ffcc; --bg: #05070a; --panel: #0a0d11; --border: #1a1e23; --dim: #556; }
     body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; color: #fff; }
     
     #header { position: absolute; top: 0; width: 100%; height: 45px; background: var(--bg); border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; align-items: center; padding: 0 25px; box-sizing: border-box; z-index: 100; }
-    
-    #sidebar { position: absolute; top: 45px; right: -650px; width: 600px; height: calc(100vh - 45px); background: var(--panel); border-left: 1px solid var(--neon); z-index: 50; transition: 0.4s ease; overflow-y: auto; }
+    #sidebar { position: absolute; top: 45px; right: -650px; width: 620px; height: calc(100vh - 45px); background: var(--panel); border-left: 1px solid var(--neon); z-index: 50; transition: 0.3s ease; overflow-y: auto; }
     #sidebar.active { right: 0; }
 
-    .p-head { background: var(--neon); color: #000; padding: 12px 25px; font-weight: bold; text-transform: uppercase; }
-    .p-body { padding: 30px; }
+    .p-head { background: var(--neon); color: #000; padding: 12px 25px; font-weight: bold; }
+    .p-body { padding: 25px; }
+    .label { color: var(--dim); font-size: 10px; text-transform: uppercase; margin-top: 25px; border-bottom: 1px solid var(--border); padding-bottom: 5px; display: block; }
     
-    .label { color: #556; font-size: 10px; text-transform: uppercase; margin-top: 30px; border-bottom: 1px solid #1a1e23; display: block; padding-bottom: 5px; }
-    
-    /* BULLET POINT STYLING */
-    .report-vessel { 
-      margin-top: 15px; font-size: 13px; line-height: 1.8; color: #fff; 
-      border-left: 3px solid var(--neon); padding: 20px; 
-      background: rgba(0,255,204,0.02); white-space: pre-line; 
-    }
+    .data-box { margin-top: 15px; font-size: 12px; line-height: 1.6; color: #fff; border-left: 2px solid var(--neon); padding: 15px; background: rgba(0,255,204,0.02); white-space: pre-wrap; }
 
-    .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 20px; }
-    .card { background: #000; border: 1px solid #1a1e23; padding: 15px; }
-    .val { font-size: 28px; font-weight: bold; color: var(--neon); }
-    .ticker-name { color: var(--neon); font-weight: bold; text-decoration: underline; }
+    .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+    .card { background: #000; border: 1px solid var(--border); padding: 15px; }
+    .val { font-size: 26px; font-weight: bold; color: var(--neon); }
   </style>
 </head>
 <body>
 
   <header id="header">
-    <div style="font-size:12px"><span style="color:#ff3333">●</span> MACRO_UPLINK: ACTIVE</div>
-    <div style="font-size:11px; color:#556;">ARCHITECT: <b style="color:var(--neon)">SANJEEV JHA</b></div>
+    <div><span style="color:#ff3333">●</span> MACRO_LIVE // DATA_ONLY_MODE</div>
+    <div style="font-size:11px; color:var(--dim);">ARCHITECT: <b style="color:var(--neon)">SANJEEV JHA</b></div>
   </header>
 
   <aside id="sidebar">
-    <div class="p-head" id="node-id">SYSTEM STANDBY</div>
+    <div class="p-head" id="node-id">REGION NODE: STANDBY</div>
     <div class="p-body">
-      <span class="label">STRATEGIC REPORT: NEWS / TRENDS / INVESTMENTS</span>
-      <div id="report-out" class="report-vessel">Select region to trigger deep-scan...</div>
+      
+      <span class="label">Top 5 Business Headlines (NewsAPI)</span>
+      <div id="news-out" class="data-box">Connecting to global news bureaus...</div>
 
-      <span class="label">CURRENT MARKET BENCHMARK: <span id="symbol-out" class="ticker-name">--</span></span>
+      <span class="label">Top 5 Macro-Economic Trends</span>
+      <div id="trends-out" class="data-box">Analyzing regional shift patterns...</div>
+
+      <span class="label">Benchmark: <span id="company-out" style="color:var(--neon)">--</span> (<span id="symbol-out">--</span>)</span>
       <div class="stat-row">
-        <div class="card">
-          <div style="font-size:9px; color:#556">SPOT VALUE (USD)</div>
-          <div id="price-out" class="val">--</div>
-        </div>
-        <div class="card">
-          <div style="font-size:9px; color:#556">24H PERFORMANCE</div>
-          <div id="trend-out" class="val">--</div>
-        </div>
+        <div class="card"><div style="font-size:9px; color:var(--dim)">SPOT VALUE</div><div id="price-out" class="val">--</div></div>
+        <div class="card"><div style="font-size:9px; color:var(--dim)">24H DELTA</div><div id="trend-out" class="val">--</div></div>
       </div>
     </div>
   </aside>
@@ -67,22 +57,23 @@
       .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
       .atmosphereColor('#00ffcc').showAtmosphere(true);
 
-    async function loadStrategicIntel(country) {
-      document.getElementById('report-out').innerHTML = "<b>UPLINK ESTABLISHED. FETCHING BULLETINS...</b>";
+    async function updateTerminal(country) {
+      document.getElementById('news-out').innerText = "FETCHING LIVE HEADLINES...";
       try {
         const res = await fetch(`/api/terminal-data?country=${country}`);
         const data = await res.json();
         
-        // Use .replace to clean up AI markdown if needed
-        document.getElementById('report-out').innerText = data.report;
-        document.getElementById('price-out').innerText = `$${data.price}`;
+        document.getElementById('news-out').innerText = data.news;
+        document.getElementById('trends-out').innerText = data.trends;
+        document.getElementById('company-out').innerText = data.company;
         document.getElementById('symbol-out').innerText = data.symbol;
+        document.getElementById('price-out').innerText = `$${data.price}`;
         
-        const trendVal = parseFloat(data.change);
-        document.getElementById('trend-out').style.color = trendVal >= 0 ? '#00ff00' : '#ff3333';
-        document.getElementById('trend-out').innerText = (trendVal >= 0 ? "▲ " : "▼ ") + Math.abs(trendVal) + "%";
+        const trend = parseFloat(data.change);
+        document.getElementById('trend-out').style.color = trend >= 0 ? '#00ff00' : '#ff3333';
+        document.getElementById('trend-out').innerText = (trend >= 0 ? "▲ " : "▼ ") + Math.abs(trend) + "%";
       } catch (err) {
-        document.getElementById('report-out').innerText = "FEED_TIMEOUT: AI Signal Weak. Please click again.";
+        document.getElementById('news-out').innerText = "API_UPLINK_FAILED";
       }
     }
 
@@ -92,9 +83,9 @@
           .polygonStrokeColor(() => '#00ffcc')
           .polygonCapColor(() => 'rgba(0,255,204,0.01)')
           .onPolygonClick(({ properties: p }) => {
-            document.getElementById('node-id').innerText = `REGION_NODE: ${p.ADMIN.toUpperCase()}`;
+            document.getElementById('node-id').innerText = `REGION: ${p.ADMIN.toUpperCase()}`;
             side.classList.add('active');
-            loadStrategicIntel(p.ADMIN);
+            updateTerminal(p.ADMIN);
           });
       });
   </script>
