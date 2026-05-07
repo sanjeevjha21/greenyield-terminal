@@ -3,54 +3,42 @@ export default async function handler(req, res) {
   const GOOGLE_KEY = process.env.GOOGLE_API_KEY;
   const FINNHUB_KEY = process.env.FINNHUB_API_KEY;
 
-  // Real-time Global Ticker Mapping
-  const marketMap = {
-    "India": "RELIANCE.NS",
-    "United States of America": "AAPL",
-    "Germany": "SAP.DE",
-    "China": "BABA",
-    "United Kingdom": "BP.L",
-    "Japan": "7203.T", // Toyota
-    "France": "MC.PA" // LVMH
+  // Real-time Sector Routing
+  const tickers = {
+    "India": ["RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS", "ICICIBANK.NS"],
+    "United States of America": ["AAPL", "NVDA", "TSLA", "MSFT", "AMZN"],
+    "Germany": ["SAP.DE", "SIE.DE", "VOW3.DE", "DBK.DE", "BAS.DE"]
   };
-  const symbol = marketMap[country] || "MSFT"; // Default to Microsoft if country not in list
+  const countryTickers = tickers[country] || ["AAPL", "GOOGL", "MSFT", "NVDA", "TSLA"];
 
   try {
-    // 1. FETCH REAL-TIME STOCK DATA
-    const stockRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${FINNHUB_KEY}`);
+    // 1. FETCH PRIMARY MARKET DATA
+    const stockRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${countryTickers[0]}&token=${FINNHUB_KEY}`);
     const stockData = await stockRes.json();
 
-    // 2. FETCH REAL-TIME NEWS & GEOPOLITICS (Using AI as a Filter)
+    // 2. AI DEEP SCAN (TOP 5s)
     const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: `You are a Bloomberg Terminal. For the country ${country}, provide:
-        - LATEST NEWS: 2 headlines from the last 24 hours.
-        - GEOPOLITICS: 1 sentence on current stability.
-        - ECONOMICS: 1 sentence on the central bank or inflation.
-        - STOCK ANALYSIS: Why is ${symbol} moving today?` }] }]
+        contents: [{ parts: [{ text: `You are a Bloomberg Intelligence Terminal. For ${country}, provide a detailed report:
+        1. TOP 5 HEADLINES: List 5 major geopolitical/economic news items.
+        2. TOP 5 TRENDS: List 5 macro trends (e.g., Green Energy shift, Inflation, AI growth).
+        3. TOP 5 INVESTMENT PICKS: List 5 specific assets/stocks with a Risk Level (Low/Med/High) and a 1-sentence logic.
+        Use a professional, high-density format.` }] }]
       })
     });
-    
     const aiData = await aiRes.json();
-    const intel = aiData.candidates?.[0]?.content?.parts?.[0]?.text || "FEED_OFFLINE";
-
-    // 3. GENERATE BUY/SELL SIGNAL
-    let signal = "NEUTRAL / HOLD";
-    if (stockData.dp > 1) signal = "STRONG BUY";
-    else if (stockData.dp > 0) signal = "ACCUMULATE";
-    else if (stockData.dp < -1) signal = "STRONG SELL";
+    const report = aiData.candidates?.[0]?.content?.parts?.[0]?.text || "FEED_TIMEOUT";
 
     res.status(200).json({
-      intel: intel,
-      symbol: symbol,
+      report: report,
+      primaryTicker: countryTickers[0],
       price: stockData.c || "0.00",
       change: stockData.dp || "0.00",
-      action: signal
+      tickerList: countryTickers.join(", ")
     });
-
-  } catch (error) {
-    res.status(500).json({ intel: "UPLINK_FAILURE", price: "ERR", change: "0" });
+  } catch (e) {
+    res.status(500).json({ error: "UPLINK_FAILURE" });
   }
 }
