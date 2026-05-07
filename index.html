@@ -2,69 +2,58 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>MACRO-NODE TERMINAL // GLOBAL STRATEGY</title>
+  <title>MACRO-NODE TERMINAL</title>
   <script src="https://unpkg.com/globe.gl"></script>
   <style>
-    :root { --neon: #00ffcc; --bg: #05070a; --panel: #0a0d11; --border: #1a1e23; --red: #ff3333; }
+    :root { --neon: #00ffcc; --red: #ff3333; --glass: rgba(10, 15, 20, 0.8); }
     body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; color: #fff; }
     
-    #header { position: absolute; top: 0; width: 100%; height: 50px; background: #000; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 100; box-sizing: border-box; }
+    #header { position: absolute; top: 0; width: 100%; height: 50px; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; padding: 0 25px; z-index: 100; box-sizing: border-box; }
 
-    #sidebar { position: absolute; top: 50px; right: -850px; width: 820px; height: calc(100vh - 50px); background: var(--panel); border-left: 2px solid var(--neon); z-index: 50; transition: 0.5s cubic-bezier(0.1, 0.7, 0.1, 1); overflow-y: auto; padding: 30px; box-sizing: border-box; }
-    #sidebar.active { right: 0; box-shadow: -20px 0 60px rgba(0, 255, 204, 0.15); }
+    /* NARROW & TRANSPARENT SIDEBAR */
+    #sidebar { position: absolute; top: 50px; right: -500px; width: 450px; height: calc(100vh - 50px); background: var(--glass); backdrop-filter: blur(15px); border-left: 1px solid var(--neon); z-index: 50; transition: 0.5s cubic-bezier(0.1, 0.8, 0.2, 1); overflow-y: auto; padding: 25px; box-sizing: border-box; }
+    #sidebar.active { right: 0; }
 
-    .country-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--border); padding-bottom: 20px; }
-    .country-name { color: var(--red); font-size: 36px; font-weight: bold; text-transform: uppercase; letter-spacing: -1px; }
+    .header-group { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+    .country-main { color: var(--red); font-size: 24px; font-weight: bold; text-transform: uppercase; }
+    .iso-sub { color: #556; font-size: 14px; }
 
-    .section-label { color: #444; font-size: 10px; text-transform: uppercase; letter-spacing: 3px; margin-top: 30px; display: block; border-left: 3px solid var(--neon); padding-left: 12px; }
-    
-    .news-item { font-size: 13px; padding: 15px; background: #0d1117; margin-top: 10px; border: 1px solid #1a1e23; line-height: 1.5; color: #e6edf3; }
-    .news-item::before { content: "» "; color: var(--neon); }
+    .label { color: #444; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; margin-top: 25px; display: block; border-left: 2px solid var(--neon); padding-left: 8px; }
+    .news-box { font-size: 11px; padding: 12px; background: rgba(255,255,255,0.03); margin-top: 8px; border: 1px solid rgba(255,255,255,0.05); line-height: 1.4; }
 
-    .market-card { background: #000; border: 1px solid var(--border); padding: 30px; margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
-    .price-val { font-size: 64px; font-weight: bold; letter-spacing: -3px; }
-    .change-val { font-size: 24px; font-weight: bold; padding-bottom: 10px; }
+    .price-card { background: rgba(0,0,0,0.4); border: 1px solid #222; padding: 20px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+    .price-val { font-size: 38px; font-weight: bold; letter-spacing: -1px; }
 
-    .asset-grid { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 11px; }
-    .asset-grid th { text-align: left; color: #556; padding: 12px; border-bottom: 2px solid var(--border); font-size: 10px; }
-    .asset-grid td { padding: 15px 12px; border-bottom: 1px solid #14181d; }
-    .type-pill { background: rgba(0, 255, 204, 0.1); color: var(--neon); padding: 4px 8px; font-weight: bold; font-size: 9px; }
+    .asset-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1a1e23; font-size: 10px; }
   </style>
 </head>
 <body>
 
 <header id="header">
-  <div style="font-weight: bold; letter-spacing: 2px; color: var(--neon);">MACRO-NODE TERMINAL // INTEL_V4</div>
-  <div style="font-size:11px; color:#556;">SYSTEM ARCHITECT: <b style="color:var(--neon)">SANJEEV JHA</b></div>
+  <div style="color: var(--neon); font-weight: bold; font-size: 14px;">MACRO-NODE TERMINAL</div>
+  <div style="font-size: 10px; color: #556;">ARCHITECT: SANJEEV JHA</div>
 </header>
 
 <aside id="sidebar">
-  <div class="country-header">
-    <img id="flag-img" src="" style="width: 70px; height: auto; box-shadow: 0 0 15px rgba(0,0,0,0.5);">
-    <span id="country-title" class="country-name">AWAITING INPUT</span>
-  </div>
-
-  <div id="ui-content">
-    <span class="section-label">Geopolitical & Economic Intelligence</span>
-    <div id="news-feed"></div>
-
-    <span class="section-label">Benchmark Performance: <span id="bench-name" style="color:var(--neon)">--</span></span>
-    <div class="market-card">
-      <div>
-        <div id="ticker-sym" style="color:#556; font-size:12px; margin-bottom:5px;">--</div>
-        <div id="price-main" class="price-val">$0.00</div>
-      </div>
-      <div id="change-main" class="change-val">--</div>
+  <div class="header-group">
+    <img id="flag-img" src="" style="width: 45px; height: auto; display: none; border: 1px solid #333;">
+    <div>
+      <span id="c-full" class="country-main">SELECT</span>
+      <span id="c-iso" class="iso-sub"></span>
     </div>
-
-    <span class="section-label">Institutional Multi-Asset Portfolio</span>
-    <table class="asset-grid">
-      <thead>
-        <tr><th>ASSET CLASS</th><th>IDENTIFIER</th><th>INSTRUMENT</th><th>RISK PROFILE</th></tr>
-      </thead>
-      <tbody id="portfolio-body"></tbody>
-    </table>
   </div>
+
+  <span class="label">Geopolitical Intel Feed</span>
+  <div id="news-out"></div>
+
+  <span class="label">Benchmark: <span id="bench" style="color:var(--neon)">--</span></span>
+  <div class="price-card">
+    <div><div id="tick" style="color:#556; font-size:10px;">--</div><div id="price" class="price-val">$0.00</div></div>
+    <div id="change" style="font-size:18px; font-weight:bold;">--</div>
+  </div>
+
+  <span class="label">Strategic Portfolio Model</span>
+  <div id="portfolio-out" style="margin-top: 10px;"></div>
 </aside>
 
 <div id="globe-viz"></div>
@@ -76,34 +65,40 @@
     .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
     .atmosphereColor('#00ffcc').showAtmosphere(true);
 
-  async function triggerTerminal(country) {
+  async function updateTerminal(country) {
     sidebar.classList.add('active');
-    document.getElementById('country-title').innerText = country;
+    document.getElementById('c-full').innerText = country;
 
-    try {
-      const res = await fetch(`/api/terminal-data?country=${country}`);
-      const data = await res.json();
+    const res = await fetch(`/api/terminal-data?country=${country}`);
+    const data = await res.json();
 
-      document.getElementById('flag-img').src = data.flag;
-      document.getElementById('news-feed').innerHTML = data.news.map(n => `<div class="news-item">${n}</div>`).join('');
-      document.getElementById('bench-name').innerText = data.bench;
-      document.getElementById('ticker-sym').innerText = data.ticker;
-      document.getElementById('price-main').innerText = "$" + data.price;
-      
-      const change = parseFloat(data.change);
-      const cMain = document.getElementById('change-main');
-      cMain.style.color = change >= 0 ? '#00ff00' : '#ff3333';
-      cMain.innerHTML = (change >= 0 ? "▲ " : "▼ ") + Math.abs(change) + "%";
+    const fImg = document.getElementById('flag-img');
+    if (data.flag) {
+      fImg.src = data.flag;
+      fImg.style.display = 'block';
+      document.getElementById('c-iso').innerText = `[${data.iso}]`;
+    } else {
+      fImg.style.display = 'none';
+      document.getElementById('c-iso').innerText = "";
+    }
 
-      document.getElementById('portfolio-body').innerHTML = data.portfolio.map(p => `
-        <tr>
-          <td><span class="type-pill">${p.cat}</span></td>
-          <td style="font-weight:bold;">${p.asset}</td>
-          <td style="color:#8b949e">${p.type}</td>
-          <td style="color:${p.risk === 'HIGH' ? 'var(--red)' : '#fff'}">${p.risk}</td>
-        </tr>
-      `).join('');
-    } catch (err) { console.error("Terminal Uplink Interrupted"); }
+    document.getElementById('news-out').innerHTML = data.news.map(n => `<div class="news-box">${n}</div>`).join('');
+    document.getElementById('bench').innerText = data.bench;
+    document.getElementById('tick').innerText = data.ticker;
+    document.getElementById('price').innerText = "$" + data.price;
+    
+    const change = parseFloat(data.change);
+    const cDiv = document.getElementById('change');
+    cDiv.style.color = change >= 0 ? '#00ff00' : '#ff3333';
+    cDiv.innerHTML = (change >= 0 ? "▲ " : "▼ ") + Math.abs(change) + "%";
+
+    document.getElementById('portfolio-out').innerHTML = data.portfolio.map(p => `
+      <div class="asset-row">
+        <span style="color:var(--neon)">${p.cat}</span>
+        <span>${p.asset}</span>
+        <span style="color:#556">${p.type}</span>
+      </div>
+    `).join('');
   }
 
   fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
@@ -111,7 +106,7 @@
       globe.polygonsData(data.features)
         .polygonStrokeColor(() => '#00ffcc')
         .polygonCapColor(() => 'rgba(0,255,204,0.02)')
-        .onPolygonClick(({ properties: p }) => triggerTerminal(p.ADMIN));
+        .onPolygonClick(({ properties: p }) => updateTerminal(p.ADMIN));
     });
 </script>
 </body>
