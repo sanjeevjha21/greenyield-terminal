@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GY-ENGINE // MACRO TERMINAL // SANJEEV JHA</title>
+  
+  <script src="https://unpkg.com/globe.gl"></script>
+  
+  <style>
+    :root {
+      --neon: #00ffcc;
+      --bg: #05070a;
+      --panel: #0c0f13;
+      --border: #1a1e23;
+      --dim: #556;
+    }
+
+    body { 
+      margin: 0; background: #000; overflow: hidden; 
+      font-family: 'Courier New', Courier, monospace; color: #fff;
+    }
+
+    /* TOP GLOBAL HEADER */
+    #header-bar {
+      position: absolute; top: 0; width: 100%; height: 45px;
+      background: var(--bg); border-bottom: 2px solid var(--neon);
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 25px; box-sizing: border-box; z-index: 100;
+      letter-spacing: 1px; font-size: 13px;
+    }
+
+    .live-tag { color: #ff3333; animation: blink 1.5s infinite; font-weight: bold; }
+    .architect-tag { font-size: 11px; color: var(--dim); }
+    .architect-tag b { color: var(--neon); text-transform: uppercase; }
+
+    /* THE INTELLIGENCE TERMINAL */
+    #terminal-sidebar {
+      position: absolute; top: 45px; right: -500px; width: 480px; 
+      height: calc(100vh - 45px); background: var(--panel); 
+      border-left: 1px solid var(--neon); z-index: 50; 
+      transition: 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+      display: flex; flex-direction: column; box-shadow: -20px 0 60px rgba(0,0,0,0.9);
+    }
+
+    #terminal-sidebar.active { right: 0; }
+
+    .panel-head { background: var(--neon); color: #000; padding: 12px 25px; font-weight: bold; text-transform: uppercase; }
+    .panel-body { padding: 30px; overflow-y: auto; }
+
+    /* DATA MODULES */
+    .label { color: var(--dim); font-size: 10px; text-transform: uppercase; margin-top: 30px; display: block; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+    
+    .whisper-vessel { 
+      margin-top: 15px; font-size: 14px; line-height: 1.7; color: #fff;
+      background: rgba(0, 255, 204, 0.03); border-left: 3px solid var(--neon); padding: 15px;
+    }
+
+    /* MARKET GRID */
+    .market-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; }
+    .card { background: #05070a; border: 1px solid var(--border); padding: 15px; }
+    .card-title { font-size: 9px; color: var(--dim); margin-bottom: 8px; }
+    .card-val { font-size: 24px; font-weight: bold; color: var(--neon); }
+    
+    .up { color: #00ff00; } .down { color: #ff3333; }
+
+    #globe-viz { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+
+    @keyframes blink { 0% {opacity:1;} 50% {opacity:0.3;} 100% {opacity:1;} }
+  </style>
+</head>
+<body>
+
+  <header id="header-bar">
+    <div><span class="live-tag">●</span> SYSTEM: GY_ENGINE_ACTIVE</div>
+    <div class="architect-tag">SYSTEM ARCHITECT: <b>SANJEEV JHA</b></div>
+  </header>
+
+  <aside id="terminal-sidebar">
+    <div class="panel-head" id="node-title">TERMINAL: STANDBY</div>
+    <div class="panel-body">
+      
+      <span class="label">Geopolitical Economic Intelligence [Gemini Pro]</span>
+      <div id="whisper-output" class="whisper-vessel">Select region for deep-scan analysis...</div>
+
+      <span class="label">Macro Market Sentiment [Finnhub Live]</span>
+      <div class="market-grid">
+        <div class="card">
+          <div class="card-title">EQUITY PRICE (USD)</div>
+          <div id="price-val" class="card-val">--</div>
+        </div>
+        <div class="card">
+          <div class="card-title">VOLATILITY / TREND</div>
+          <div id="trend-val" class="card-val">--</div>
+        </div>
+      </div>
+
+      <span class="label">Authentication Logs</span>
+      <div id="log" style="font-size: 10px; color: #444; margin-top: 10px;">ID: SANJEEV_JHA // STATUS: SECURE</div>
+      
+    </div>
+  </aside>
+
+  <div id="globe-viz"></div>
+
+  <script>
+    const panel = document.getElementById('terminal-sidebar');
+    const world = Globe()(document.getElementById('globe-viz'))
+      .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+      .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
+      .atmosphereColor('#00ffcc')
+      .showAtmosphere(true);
+
+    world.controls().autoRotate = true;
+    world.controls().autoRotateSpeed = 0.5;
+
+    // THE SECURE DATA LINK
+    async function getIntel(country) {
+      document.getElementById('whisper-output').innerText = "AI is running macro-economic trend analysis...";
+      document.getElementById('log').innerText = `Uplink: Requesting data for ${country}...`;
+
+      try {
+        const res = await fetch(`/api/terminal-data?country=${country}`);
+        const data = await res.json();
+        
+        document.getElementById('whisper-output').innerText = data.whisper || "Intelligence feed interrupted.";
+        
+        const price = data.price || "0.00";
+        const change = data.change || "0.00";
+        const trendIcon = change >= 0 ? "▲" : "▼";
+        const trendClass = change >= 0 ? "up" : "down";
+
+        document.getElementById('price-val').innerText = `$${price}`;
+        document.getElementById('trend-val').innerHTML = `<span class="${trendClass}">${trendIcon} ${Math.abs(change)}%</span>`;
+        document.getElementById('log').innerText = "SYNC: ENCRYPTED // ARCHITECT VALIDATED";
+
+      } catch (err) {
+        document.getElementById('whisper-output').innerText = "SYSTEM ERROR: Deploy to Vercel and check API Keys.";
+        document.getElementById('log').innerText = "STATUS: CONNECTION_FAILED";
+      }
+    }
+
+    // MAP DATA LOADING
+    fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
+      .then(res => res.json())
+      .then(data => {
+        world.polygonsData(data.features)
+          .polygonStrokeColor(() => '#00ffcc')
+          .polygonCapColor(() => 'rgba(0, 255, 204, 0.01)')
+          .onPolygonHover(h => world.polygonCapColor(d => d === h ? 'rgba(0, 255, 204, 0.3)' : 'rgba(0, 255, 204, 0.01)'))
+          .onPolygonClick(({ properties: p }) => {
+            document.getElementById('node-title').innerText = `NODE: ${p.ADMIN}`;
+            panel.classList.add('active');
+            getIntel(p.ADMIN);
+          });
+      });
+
+    window.addEventListener('resize', () => world.width(window.innerWidth).height(window.innerHeight));
+  </script>
+</body>
+</html>
