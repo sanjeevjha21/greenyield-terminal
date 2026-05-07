@@ -5,25 +5,30 @@
   <title>MACRO-NODE TERMINAL // SANJEEV JHA</title>
   <script src="https://unpkg.com/globe.gl"></script>
   <style>
-    :root { --neon: #00ffcc; --bg: #05070a; --panel: #0d1117; --border: #30363d; --red: #ff4444; }
+    :root { --neon: #00ffcc; --bg: #05070a; --panel: #0a0d11; --border: #1a1e23; --red: #ff3333; }
     body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; color: #fff; }
     
-    #header { position: absolute; top: 0; width: 100%; height: 50px; background: #000; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 100; box-sizing: border-box; }
-    #sidebar { position: absolute; top: 50px; right: -820px; width: 800px; height: calc(100vh - 50px); background: var(--panel); border-left: 2px solid var(--neon); z-index: 50; transition: 0.4s ease; overflow-y: auto; padding: 25px; box-sizing: border-box; }
-    #sidebar.active { right: 0; }
+    #header { position: absolute; top: 0; width: 100%; height: 50px; background: #000; border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 100; box-sizing: border-box; }
 
-    .flex-head { display: flex; align-items: center; gap: 20px; margin-bottom: 20px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
-    .country-red { color: var(--red); font-weight: bold; font-size: 32px; text-transform: uppercase; }
-    
+    #sidebar { position: absolute; top: 50px; right: -850px; width: 800px; height: calc(100vh - 50px); background: var(--panel); border-left: 2px solid var(--neon); z-index: 50; transition: 0.4s ease; overflow-y: auto; padding: 25px; box-sizing: border-box; }
+    #sidebar.active { right: 0; box-shadow: -20px 0 50px rgba(0, 255, 204, 0.1); }
+
+    .country-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
+    .country-name { color: var(--red); font-size: 32px; font-weight: bold; text-transform: uppercase; }
+
     .label { color: #556; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 25px; display: block; border-left: 3px solid var(--neon); padding-left: 10px; }
-    .news-card { font-size: 11px; padding: 10px; background: #161b22; margin-top: 6px; border-left: 2px solid var(--border); }
+    
+    /* ASSET TABLE */
+    .asset-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 11px; }
+    .asset-table th { text-align: left; color: #556; padding: 10px; border-bottom: 1px solid var(--border); }
+    .asset-table td { padding: 12px 10px; border-bottom: 1px solid #161b22; }
+    .cat-tag { color: var(--neon); font-weight: bold; font-size: 9px; }
 
-    /* STRATEGIC TABLE */
-    .strat-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 11px; text-align: left; }
-    .strat-table th { color: #556; padding: 10px; border-bottom: 1px solid var(--border); font-size: 9px; }
-    .strat-table td { padding: 12px 10px; border-bottom: 1px solid #161b22; }
+    /* NEWS BOX */
+    .news-card { font-size: 12px; padding: 12px; background: #161b22; margin-top: 8px; border-left: 2px solid var(--border); }
 
-    .price-box { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 20px; margin-top: 15px; border: 1px solid var(--border); }
+    .price-display { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 20px; margin-top: 15px; border: 1px solid var(--border); }
+    .trend-up { color: #00ff00; } .trend-down { color: var(--red); }
   </style>
 </head>
 <body>
@@ -34,29 +39,30 @@
 </header>
 
 <aside id="sidebar">
-  <div class="flex-head">
+  <div class="country-header">
     <img id="flag" src="" style="width: 60px; height: auto; border: 1px solid var(--border);">
-    <span id="country-name" class="country-red">STANDBY</span>
+    <span id="c-name" class="country-name">STANDBY</span>
   </div>
 
-  <div id="loader" style="display:none; color:var(--neon); animation: blink 1s infinite;">INTERCEPTING REGIONAL INTELLIGENCE...</div>
-
   <div id="data-ui">
-    <span class="label">Top 5 Regional Business Bulletins</span>
+    <span class="label">Strategic Regional Intelligence (Business News)</span>
     <div id="news-out"></div>
 
-    <span class="label">Benchmark Performance: <span id="asset-label" style="color:var(--neon)">--</span></span>
-    <div class="price-box">
-      <div><div id="ticker" style="color:#556; font-size:12px;">--</div><div id="price" style="font-size:32px; font-weight:bold;">0.00</div></div>
-      <div id="change" style="font-size:24px; font-weight:bold;">--</div>
+    <span class="label">Core Benchmark: <span id="bench-label" style="color:var(--neon)">--</span></span>
+    <div class="price-display">
+      <div>
+        <div id="ticker" style="color:#556; font-size:12px;">--</div>
+        <div id="price" style="font-size:42px; font-weight:bold;">$0.00</div>
+      </div>
+      <div id="change" style="font-size:28px; font-weight:bold;">--</div>
     </div>
 
-    <span class="label">Strategic Portfolio: Multi-Asset Class Analysis</span>
-    <table class="strat-table">
+    <span class="label">Multi-Asset Strategic Portfolio</span>
+    <table class="asset-table">
       <thead>
-        <tr><th>STOCK</th><th>DERIVATIVE</th><th>SOVEREIGN BOND</th><th>ESG/RENEWABLE</th><th>RISK</th></tr>
+        <tr><th>CATEGORY</th><th>ASSET</th><th>INSTRUMENT</th><th>RISK</th></tr>
       </thead>
-      <tbody id="portfolio-list"></tbody>
+      <tbody id="asset-list"></tbody>
     </table>
   </div>
 </aside>
@@ -65,50 +71,39 @@
 
 <script>
   const sidebar = document.getElementById('sidebar');
-  const loader = document.getElementById('loader');
-  const ui = document.getElementById('data-ui');
-
   const globe = Globe()(document.getElementById('globe-viz'))
     .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
     .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
     .atmosphereColor('#00ffcc').showAtmosphere(true);
 
-  async function fetchMacroData(country) {
+  async function loadTerminal(country) {
     sidebar.classList.add('active');
-    ui.style.display = 'none';
-    loader.style.display = 'block';
-    document.getElementById('country-name').innerText = country;
+    document.getElementById('c-name').innerText = country;
 
     try {
       const res = await fetch(`/api/terminal-data?country=${country}`);
       const data = await res.json();
 
-      loader.style.display = 'none';
-      ui.style.display = 'block';
-
       document.getElementById('flag').src = data.flag;
       document.getElementById('news-out').innerHTML = data.news.map(n => `<div class="news-card">${n}</div>`).join('');
-      document.getElementById('asset-label').innerText = data.label;
+      document.getElementById('bench-label').innerText = data.bench;
       document.getElementById('ticker').innerText = data.ticker;
       document.getElementById('price').innerText = "$" + data.price;
       
       const change = parseFloat(data.change);
-      document.getElementById('change').style.color = change >= 0 ? '#00ff00' : '#ff4444';
+      document.getElementById('change').className = change >= 0 ? 'trend-up' : 'trend-down';
       document.getElementById('change').innerText = (change >= 0 ? "▲ " : "▼ ") + Math.abs(change) + "%";
 
-      document.getElementById('portfolio-list').innerHTML = data.portfolio.map(p => `
+      document.getElementById('asset-list').innerHTML = data.portfolio.map(p => `
         <tr>
-          <td style="color:var(--neon); font-weight:bold;">${p.stock}</td>
-          <td>${p.instrument}</td>
-          <td style="color:#aaa">${p.bond}</td>
-          <td style="color:#00ffcc">${p.green}</td>
-          <td style="font-weight:bold; color:${p.risk==='HIGH'?'#ff4444':'#fff'}">${p.risk}</td>
+          <td class="cat-tag">${p.cat}</td>
+          <td style="font-weight:bold;">${p.asset}</td>
+          <td style="color:#8b949e">${p.type}</td>
+          <td style="color:${p.risk === 'HIGH' ? 'var(--red)' : '#fff'}">${p.risk}</td>
         </tr>
       `).join('');
 
-    } catch (err) {
-      loader.innerText = "UPLINK ERROR: NO SATELLITE COVERAGE";
-    }
+    } catch (err) { console.log("UPLINK ERROR"); }
   }
 
   fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
@@ -116,9 +111,8 @@
       globe.polygonsData(data.features)
         .polygonStrokeColor(() => '#00ffcc')
         .polygonCapColor(() => 'rgba(0,255,204,0.02)')
-        .onPolygonClick(({ properties: p }) => fetchMacroData(p.ADMIN));
+        .onPolygonClick(({ properties: p }) => loadTerminal(p.ADMIN));
     });
 </script>
-<style>@keyframes blink { 50% { opacity: 0; } }</style>
 </body>
 </html>
