@@ -8,7 +8,7 @@
     :root { --neon: #00ffcc; --bg: #05070a; --panel: #0a0d11; --border: #1a1e23; --red: #ff3333; }
     body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; color: #fff; }
     
-    #header { position: absolute; top: 0; width: 100%; height: 50px; background: #000; border-bottom: 2px solid var(--neon); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 100; box-sizing: border-box; }
+    #header { position: absolute; top: 0; width: 100%; height: 50px; background: #000; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 100; box-sizing: border-box; }
 
     #sidebar { position: absolute; top: 50px; right: -850px; width: 800px; height: calc(100vh - 50px); background: var(--panel); border-left: 2px solid var(--neon); z-index: 50; transition: 0.4s ease; overflow-y: auto; padding: 25px; box-sizing: border-box; }
     #sidebar.active { right: 0; box-shadow: -20px 0 50px rgba(0, 255, 204, 0.1); }
@@ -18,24 +18,24 @@
 
     .label { color: #556; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 25px; display: block; border-left: 3px solid var(--neon); padding-left: 10px; }
     
-    /* ASSET TABLE */
-    .asset-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 11px; }
+    .news-card { font-size: 12px; padding: 12px; background: #161b22; margin-top: 8px; border-left: 2px solid var(--border); line-height: 1.4; }
+
+    /* REAL-TIME DATA CARD (Replaces the screenshot) */
+    .telemetry-card { background: #000; border: 1px solid var(--border); padding: 25px; margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .price-main { font-size: 56px; font-weight: bold; color: #fff; letter-spacing: -2px; }
+    .change-indicator { font-size: 24px; font-weight: bold; padding-bottom: 8px; }
+
+    .asset-table { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 11px; }
     .asset-table th { text-align: left; color: #556; padding: 10px; border-bottom: 1px solid var(--border); }
     .asset-table td { padding: 12px 10px; border-bottom: 1px solid #161b22; }
     .cat-tag { color: var(--neon); font-weight: bold; font-size: 9px; }
-
-    /* NEWS BOX */
-    .news-card { font-size: 12px; padding: 12px; background: #161b22; margin-top: 8px; border-left: 2px solid var(--border); }
-
-    .price-display { display: flex; justify-content: space-between; align-items: center; background: #000; padding: 20px; margin-top: 15px; border: 1px solid var(--border); }
-    .trend-up { color: #00ff00; } .trend-down { color: var(--red); }
   </style>
 </head>
 <body>
 
 <header id="header">
   <div style="font-weight: bold; letter-spacing: 2px; color: var(--neon);">MACRO-NODE TERMINAL</div>
-  <div style="font-size:11px; color:#556;">ARCHITECT: <b style="color:var(--neon)">SANJEEV JHA</b></div>
+  <div style="font-size:12px; color:#8b949e;">SYSTEM ARCHITECT: <b style="color:var(--neon)">SANJEEV JHA</b></div>
 </header>
 
 <aside id="sidebar">
@@ -45,22 +45,22 @@
   </div>
 
   <div id="data-ui">
-    <span class="label">Strategic Regional Intelligence (Business News)</span>
+    <span class="label">Strategic Regional Intelligence (Business/Finance)</span>
     <div id="news-out"></div>
 
-    <span class="label">Core Benchmark: <span id="bench-label" style="color:var(--neon)">--</span></span>
-    <div class="price-display">
+    <span class="label">Benchmark Data: <span id="bench-label" style="color:var(--neon)">--</span></span>
+    <div class="telemetry-card">
       <div>
-        <div id="ticker" style="color:#556; font-size:12px;">--</div>
-        <div id="price" style="font-size:42px; font-weight:bold;">$0.00</div>
+        <div id="ticker-label" style="color:#556; font-size:12px; margin-bottom: 5px;">--</div>
+        <div id="price" class="price-main">$0.00</div>
       </div>
-      <div id="change" style="font-size:28px; font-weight:bold;">--</div>
+      <div id="change" class="change-indicator">--</div>
     </div>
 
-    <span class="label">Multi-Asset Strategic Portfolio</span>
+    <span class="label">Institutional Multi-Asset Portfolio</span>
     <table class="asset-table">
       <thead>
-        <tr><th>CATEGORY</th><th>ASSET</th><th>INSTRUMENT</th><th>RISK</th></tr>
+        <tr><th>CATEGORY</th><th>ASSET IDENTIFIER</th><th>INSTRUMENT</th><th>RISK</th></tr>
       </thead>
       <tbody id="asset-list"></tbody>
     </table>
@@ -87,12 +87,13 @@
       document.getElementById('flag').src = data.flag;
       document.getElementById('news-out').innerHTML = data.news.map(n => `<div class="news-card">${n}</div>`).join('');
       document.getElementById('bench-label').innerText = data.bench;
-      document.getElementById('ticker').innerText = data.ticker;
+      document.getElementById('ticker-label').innerText = data.ticker;
       document.getElementById('price').innerText = "$" + data.price;
       
       const change = parseFloat(data.change);
-      document.getElementById('change').className = change >= 0 ? 'trend-up' : 'trend-down';
-      document.getElementById('change').innerText = (change >= 0 ? "▲ " : "▼ ") + Math.abs(change) + "%";
+      const indicator = document.getElementById('change');
+      indicator.style.color = change >= 0 ? '#00ff00' : '#ff3333';
+      indicator.innerHTML = (change >= 0 ? "▲ " : "▼ ") + Math.abs(change) + "%";
 
       document.getElementById('asset-list').innerHTML = data.portfolio.map(p => `
         <tr>
@@ -103,7 +104,7 @@
         </tr>
       `).join('');
 
-    } catch (err) { console.log("UPLINK ERROR"); }
+    } catch (err) { console.log("DATA_FETCH_ERROR"); }
   }
 
   fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
