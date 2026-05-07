@@ -3,7 +3,7 @@ export default async function handler(req, res) {
   const NEWS_KEY = process.env.NEWS_API_KEY;
   const FINNHUB_KEY = process.env.FINNHUB_API_KEY;
 
-  // STRICT ISO MAPPING
+  // STRICT ISO & ASSET MAPPING
   const registry = {
     "India": { iso: "IN", ticker: "RELIANCE.NS", bench: "NIFTY 50" },
     "Egypt": { iso: "EG", ticker: "HRHO.CA", bench: "EGX 30" },
@@ -18,25 +18,25 @@ export default async function handler(req, res) {
 
   const config = registry[country];
   const safeTicker = config?.ticker || "AAPL";
-  const safeBench = config?.bench || "GLOBAL REGIONAL";
+  const safeBench = config?.bench || "GLOBAL BENCHMARK";
 
   try {
-    // Broader search to prevent empty arrays
-    const query = encodeURIComponent(`${country} economy OR business`);
+    // STRICT NEWS QUERY: Forces country name + finance terms to be in the Title/Description
+    const query = encodeURIComponent(`"${country}" AND (economy OR finance OR market OR stock OR geopolitics)`);
     
     const [newsRes, stockRes] = await Promise.all([
-      fetch(`https://newsapi.org/v2/everything?q=${query}&sortBy=publishedAt&pageSize=5&apiKey=${NEWS_KEY}`),
+      fetch(`https://newsapi.org/v2/everything?q=${query}&searchIn=title,description&sortBy=publishedAt&pageSize=5&apiKey=${NEWS_KEY}`),
       fetch(`https://finnhub.io/api/v1/quote?symbol=${safeTicker}&token=${FINNHUB_KEY}`)
     ]);
 
     const newsData = await newsRes.json();
     const stock = await stockRes.json();
 
-    // FALLBACK LOGIC: If API fails/limits out, use professional mock headlines
+    // FALLBACK LOGIC: If real news is zero, generate hyper-specific economic placeholders
     let headlines = newsData.articles?.map(a => a.title).slice(0, 5) || [];
     if (headlines.length === 0) {
       headlines = [
-        `Central Bank of ${country} outlines new fiscal stability measures`,
+        `Central Bank of ${country} outlines new inflation mitigation strategy`,
         `Foreign Direct Investment shifts observed in ${country} industrial sector`,
         `Cross-border trade agreements re-evaluated amidst regional volatility`,
         `Energy infrastructure development accelerated in key economic zones`,
@@ -44,15 +44,14 @@ export default async function handler(req, res) {
       ];
     }
 
-    // THE 10-POINT STRATEGIC PORTFOLIO
+    // THE 10-POINT STRATEGIC PORTFOLIO (5 Core + 5 ESG/Bond)
     const portfolio = [
-      // 5 Core Financial
       { cat: "EQUITY", asset: safeTicker, inst: "Spot", risk: "MOD" },
       { cat: "DERIVATIVE", asset: `${safeTicker} CALL`, inst: "Option", risk: "HIGH" },
       { cat: "FUTURE", asset: `${safeBench} FUT`, inst: "Hedge", risk: "HIGH" },
       { cat: "FOREX", asset: `USD / Local`, inst: "Currency", risk: "HIGH" },
       { cat: "EQUITY", asset: "TOP DIVIDEND", inst: "Income", risk: "LOW" },
-      // 5 ESG & Bonds
+      
       { cat: "FIXED INC", asset: `${country} 10Y`, inst: "Sov. Bond", risk: "LOW" },
       { cat: "FIXED INC", asset: `${country} 2Y`, inst: "Sov. Bond", risk: "LOW" },
       { cat: "ESG", asset: "SOLAR INFRA", inst: "Green Eq.", risk: "MED" },
