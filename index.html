@@ -5,55 +5,59 @@
   <title>MACRO-NODE TERMINAL</title>
   <script src="https://unpkg.com/globe.gl"></script>
   <style>
-    :root { --neon: #00ffcc; --red: #ff3333; --glass: rgba(10, 15, 20, 0.8); }
+    :root { --neon: #00ffcc; --red: #ff3333; --glass: rgba(10, 15, 20, 0.85); --border: rgba(48, 54, 61, 0.5); }
     body { margin: 0; background: #000; overflow: hidden; font-family: 'Courier New', monospace; color: #fff; }
     
     #header { position: absolute; top: 0; width: 100%; height: 50px; background: rgba(0,0,0,0.9); border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; padding: 0 25px; z-index: 100; box-sizing: border-box; }
 
-    /* NARROW & TRANSPARENT SIDEBAR */
-    #sidebar { position: absolute; top: 50px; right: -500px; width: 450px; height: calc(100vh - 50px); background: var(--glass); backdrop-filter: blur(15px); border-left: 1px solid var(--neon); z-index: 50; transition: 0.5s cubic-bezier(0.1, 0.8, 0.2, 1); overflow-y: auto; padding: 25px; box-sizing: border-box; }
+    #sidebar { position: absolute; top: 50px; right: -650px; width: 600px; height: calc(100vh - 50px); background: var(--glass); backdrop-filter: blur(15px); border-left: 1px solid var(--neon); z-index: 50; transition: 0.5s cubic-bezier(0.1, 0.8, 0.2, 1); overflow-y: auto; padding: 25px; box-sizing: border-box; }
     #sidebar.active { right: 0; }
 
-    .header-group { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
-    .country-main { color: var(--red); font-size: 24px; font-weight: bold; text-transform: uppercase; }
-    .iso-sub { color: #556; font-size: 14px; }
+    .header-group { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+    .country-main { color: var(--red); font-size: 28px; font-weight: bold; text-transform: uppercase; }
+    
+    .label { color: #556; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; margin-top: 25px; display: block; border-left: 2px solid var(--neon); padding-left: 10px; }
+    .news-box { font-size: 11px; padding: 12px; background: rgba(255,255,255,0.03); margin-top: 8px; border-left: 1px solid var(--border); line-height: 1.4; }
 
-    .label { color: #444; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; margin-top: 25px; display: block; border-left: 2px solid var(--neon); padding-left: 8px; }
-    .news-box { font-size: 11px; padding: 12px; background: rgba(255,255,255,0.03); margin-top: 8px; border: 1px solid rgba(255,255,255,0.05); line-height: 1.4; }
+    /* PROFESSIONAL PORTFOLIO TABLE */
+    .strat-table { width: 100%; margin-top: 15px; border-collapse: collapse; font-size: 11px; text-align: left; }
+    .strat-table th { color: #444; padding: 10px; border-bottom: 1px solid var(--border); font-size: 9px; }
+    .strat-table td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 
-    .price-card { background: rgba(0,0,0,0.4); border: 1px solid #222; padding: 20px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
-    .price-val { font-size: 38px; font-weight: bold; letter-spacing: -1px; }
-
-    .asset-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #1a1e23; font-size: 10px; }
+    .price-card { background: rgba(0,0,0,0.4); border: 1px solid var(--border); padding: 20px; margin-top: 15px; display: flex; justify-content: space-between; align-items: center; }
+    .price-val { font-size: 42px; font-weight: bold; letter-spacing: -1px; }
   </style>
 </head>
 <body>
 
 <header id="header">
-  <div style="color: var(--neon); font-weight: bold; font-size: 14px;">MACRO-NODE TERMINAL</div>
+  <div style="color: var(--neon); font-weight: bold; letter-spacing: 1px;">MACRO-NODE TERMINAL</div>
   <div style="font-size: 10px; color: #556;">ARCHITECT: SANJEEV JHA</div>
 </header>
 
 <aside id="sidebar">
   <div class="header-group">
-    <img id="flag-img" src="" style="width: 45px; height: auto; display: none; border: 1px solid #333;">
-    <div>
-      <span id="c-full" class="country-main">SELECT</span>
-      <span id="c-iso" class="iso-sub"></span>
-    </div>
+    <img id="flag-img" src="" style="width: 50px; height: auto; display: none; border: 1px solid #333;">
+    <span id="c-full" class="country-main">STANDBY</span>
+    <span id="c-iso" style="color:#556; font-size:14px;"></span>
   </div>
 
-  <span class="label">Geopolitical Intel Feed</span>
+  <span class="label">Geopolitical Intelligence Feed</span>
   <div id="news-out"></div>
 
-  <span class="label">Benchmark: <span id="bench" style="color:var(--neon)">--</span></span>
+  <span class="label">Market Benchmark: <span id="bench" style="color:var(--neon)">--</span></span>
   <div class="price-card">
     <div><div id="tick" style="color:#556; font-size:10px;">--</div><div id="price" class="price-val">$0.00</div></div>
-    <div id="change" style="font-size:18px; font-weight:bold;">--</div>
+    <div id="change" style="font-size:20px; font-weight:bold;">--</div>
   </div>
 
-  <span class="label">Strategic Portfolio Model</span>
-  <div id="portfolio-out" style="margin-top: 10px;"></div>
+  <span class="label">Institutional Multi-Asset Portfolio</span>
+  <table class="strat-table">
+    <thead>
+      <tr><th>CATEGORY</th><th>ASSET</th><th>INSTRUMENT</th><th>RISK</th></tr>
+    </thead>
+    <tbody id="portfolio-list"></tbody>
+  </table>
 </aside>
 
 <div id="globe-viz"></div>
@@ -69,36 +73,38 @@
     sidebar.classList.add('active');
     document.getElementById('c-full').innerText = country;
 
-    const res = await fetch(`/api/terminal-data?country=${country}`);
-    const data = await res.json();
+    try {
+      const res = await fetch(`/api/terminal-data?country=${country}`);
+      const data = await res.json();
 
-    const fImg = document.getElementById('flag-img');
-    if (data.flag) {
-      fImg.src = data.flag;
-      fImg.style.display = 'block';
-      document.getElementById('c-iso').innerText = `[${data.iso}]`;
-    } else {
-      fImg.style.display = 'none';
-      document.getElementById('c-iso').innerText = "";
-    }
+      const fImg = document.getElementById('flag-img');
+      if (data.flag) {
+        fImg.src = data.flag; fImg.style.display = 'block';
+        document.getElementById('c-iso').innerText = `[${data.iso}]`;
+      } else {
+        fImg.style.display = 'none';
+        document.getElementById('c-iso').innerText = "";
+      }
 
-    document.getElementById('news-out').innerHTML = data.news.map(n => `<div class="news-box">${n}</div>`).join('');
-    document.getElementById('bench').innerText = data.bench;
-    document.getElementById('tick').innerText = data.ticker;
-    document.getElementById('price').innerText = "$" + data.price;
-    
-    const change = parseFloat(data.change);
-    const cDiv = document.getElementById('change');
-    cDiv.style.color = change >= 0 ? '#00ff00' : '#ff3333';
-    cDiv.innerHTML = (change >= 0 ? "▲ " : "▼ ") + Math.abs(change) + "%";
+      document.getElementById('news-out').innerHTML = data.news.map(n => `<div class="news-box">${n}</div>`).join('');
+      document.getElementById('bench').innerText = data.bench;
+      document.getElementById('tick').innerText = data.ticker;
+      document.getElementById('price').innerText = "$" + data.price;
+      
+      const change = parseFloat(data.change);
+      const cDiv = document.getElementById('change');
+      cDiv.style.color = change >= 0 ? '#00ff00' : '#ff3333';
+      cDiv.innerHTML = (change >= 0 ? "▲ " : "▼ ") + Math.abs(change) + "%";
 
-    document.getElementById('portfolio-out').innerHTML = data.portfolio.map(p => `
-      <div class="asset-row">
-        <span style="color:var(--neon)">${p.cat}</span>
-        <span>${p.asset}</span>
-        <span style="color:#556">${p.type}</span>
-      </div>
-    `).join('');
+      document.getElementById('portfolio-list').innerHTML = data.portfolio.map(p => `
+        <tr>
+          <td style="color:var(--neon); font-weight:bold; font-size:9px;">${p.cat}</td>
+          <td>${p.asset}</td>
+          <td style="color:#8b949e">${p.inst}</td>
+          <td style="color:${p.risk === 'HIGH' ? 'var(--red)' : '#fff'}">${p.risk}</td>
+        </tr>
+      `).join('');
+    } catch (err) { console.error("OFFLINE"); }
   }
 
   fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
