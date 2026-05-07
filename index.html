@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GY-ENGINE | Strategic Terminal</title>
+  <script src="https://unpkg.com/globe.gl"></script>
+  <style>
+    :root {
+      --glow-cyan: #00ffcc;
+      --panel-bg: rgba(6, 9, 13, 0.96);
+      --text-dim: #667;
+    }
+
+    body { 
+      margin: 0; background: #000; overflow: hidden; 
+      font-family: 'Courier New', Courier, monospace; color: var(--glow-cyan);
+    }
+
+    /* TOP GLOBAL NAV - SYSTEM AUTHENTICATION */
+    #sys-header {
+      position: absolute; top: 0; width: 100%; height: 40px;
+      background: #000; border-bottom: 1px solid #1a1a1a;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0 20px; box-sizing: border-box; z-index: 100;
+      font-size: 11px; letter-spacing: 1px;
+    }
+
+    .auth-badge { border: 1px solid var(--glow-cyan); padding: 2px 8px; border-radius: 3px; }
+
+    /* DATA TERMINAL - BLOOMBERG STYLE */
+    #intel-panel {
+      position: absolute; top: 40px; right: -500px; width: 420px; height: calc(100vh - 40px);
+      background: var(--panel-bg); border-left: 1px solid #1a1a1a;
+      z-index: 50; transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+      display: flex; flex-direction: column; box-shadow: -20px 0 50px rgba(0,0,0,0.9);
+    }
+
+    #intel-panel.active { right: 0; border-left: 1px solid var(--glow-cyan); }
+
+    .panel-hdr { background: var(--glow-cyan); color: #000; padding: 10px 20px; font-weight: bold; font-size: 14px; }
+    .panel-body { padding: 30px; }
+
+    .data-label { color: var(--text-dim); font-size: 10px; text-transform: uppercase; margin-top: 30px; display: block; border-bottom: 1px solid #1a1a1a; padding-bottom: 5px; }
+    
+    .whisper-vessel { 
+        margin-top: 15px; font-size: 14px; line-height: 1.6; color: #fff;
+        border-left: 2px solid var(--glow-cyan); padding-left: 15px;
+    }
+
+    .market-vessel { font-size: 42px; font-weight: bold; margin-top: 10px; color: var(--glow-cyan); }
+    .unit { font-size: 14px; color: var(--text-dim); margin-left: 5px; }
+
+    #globe-viz { position: absolute; top: 0; left: 0; z-index: 1; }
+  </style>
+</head>
+<body>
+
+  <nav id="sys-header">
+    <div><span style="color:#ff3333; margin-right:5px;">●</span> SYSTEM: LIVE_FEED // GY_ENGINE_V2</div>
+    <div class="auth-badge">ARCHITECT AUTHENTICATED: SANJEEV JHA</div>
+  </nav>
+
+  <aside id="intel-panel">
+    <div class="panel-hdr" id="country-name">DATA_NODE: STANDBY</div>
+    <div class="panel-body">
+      
+      <span class="data-label">Geopolitical Analysis [Gemini Pro AI]</span>
+      <div id="whisper-output" class="whisper-vessel">Initiating regional satellite uplink...</div>
+
+      <span class="data-label">Global Market Pulse [Finnhub]</span>
+      <div class="market-vessel">
+        <span id="price-output">--</span><span class="unit">USD</span>
+      </div>
+      
+    </div>
+  </aside>
+
+  <div id="globe-viz"></div>
+
+  <script>
+    const panel = document.getElementById('intel-panel');
+    const globe = Globe()(document.getElementById('globe-viz'))
+      .globeImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/earth-blue-marble.jpg')
+      .backgroundImageUrl('https://cdn.jsdelivr.net/npm/three-globe/example/img/night-sky.png')
+      .pointColor(() => 'var(--glow-cyan)')
+      .pointAltitude(0.1);
+
+    globe.controls().autoRotate = true;
+    globe.controls().autoRotateSpeed = 0.6;
+
+    async function fetchSystemData(country) {
+      // 1. Reset UI to Loading state to prevent "undefined" flicker
+      document.getElementById('whisper-output').innerText = "Analyzing current geopolitical shifts...";
+      document.getElementById('price-output').innerText = "---";
+
+      try {
+        // 2. Call the Vercel API
+        const res = await fetch(`/api/terminal-data?country=${country}`);
+        const data = await res.json();
+        
+        // 3. Update with real data, or fallback if API isn't live yet
+        document.getElementById('whisper-output').innerText = data.whisper || "Intelligence stream encrypted. Deploy to Vercel to activate.";
+        document.getElementById('price-output').innerText = data.price || "0.00";
+      } catch (err) {
+        document.getElementById('whisper-output').innerText = "API Offline. Link requires Vercel deployment.";
+      }
+    }
+
+    fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
+      .then(res => res.json())
+      .then(data => {
+        globe.polygonsData(data.features)
+          .polygonStrokeColor(() => 'var(--glow-cyan)')
+          .polygonCapColor(() => 'rgba(0, 255, 204, 0.01)')
+          .onPolygonClick(({ properties: p }) => {
+            document.getElementById('country-name').innerText = `DATA_NODE: ${p.ADMIN.toUpperCase()}`;
+            panel.classList.add('active');
+            fetchSystemData(p.ADMIN);
+          });
+      });
+  </script>
+</body>
+</html>
