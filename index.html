@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>MACRO-NODE TERMINAL // SANJEEV JHA</title>
+  <title>MACRO-NODE TERMINAL // GLOBAL STRATEGY</title>
   <script src="https://unpkg.com/globe.gl"></script>
   <style>
     :root { --neon: #00ffcc; --bg: #05070a; --panel: #0a0d11; --border: #1a1e23; --red: #ff3333; }
@@ -10,59 +10,59 @@
     
     #header { position: absolute; top: 0; width: 100%; height: 50px; background: #000; border-bottom: 1px solid var(--neon); display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 100; box-sizing: border-box; }
 
-    #sidebar { position: absolute; top: 50px; right: -850px; width: 800px; height: calc(100vh - 50px); background: var(--panel); border-left: 2px solid var(--neon); z-index: 50; transition: 0.4s ease; overflow-y: auto; padding: 25px; box-sizing: border-box; }
-    #sidebar.active { right: 0; box-shadow: -20px 0 50px rgba(0, 255, 204, 0.1); }
+    #sidebar { position: absolute; top: 50px; right: -850px; width: 820px; height: calc(100vh - 50px); background: var(--panel); border-left: 2px solid var(--neon); z-index: 50; transition: 0.5s cubic-bezier(0.1, 0.7, 0.1, 1); overflow-y: auto; padding: 30px; box-sizing: border-box; }
+    #sidebar.active { right: 0; box-shadow: -20px 0 60px rgba(0, 255, 204, 0.15); }
 
-    .country-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--border); padding-bottom: 15px; }
-    .country-name { color: var(--red); font-size: 32px; font-weight: bold; text-transform: uppercase; }
+    .country-header { display: flex; align-items: center; gap: 20px; border-bottom: 2px solid var(--border); padding-bottom: 20px; }
+    .country-name { color: var(--red); font-size: 36px; font-weight: bold; text-transform: uppercase; letter-spacing: -1px; }
 
-    .label { color: #556; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 25px; display: block; border-left: 3px solid var(--neon); padding-left: 10px; }
+    .section-label { color: #444; font-size: 10px; text-transform: uppercase; letter-spacing: 3px; margin-top: 30px; display: block; border-left: 3px solid var(--neon); padding-left: 12px; }
     
-    .news-card { font-size: 12px; padding: 12px; background: #161b22; margin-top: 8px; border-left: 2px solid var(--border); line-height: 1.4; }
+    .news-item { font-size: 13px; padding: 15px; background: #0d1117; margin-top: 10px; border: 1px solid #1a1e23; line-height: 1.5; color: #e6edf3; }
+    .news-item::before { content: "» "; color: var(--neon); }
 
-    /* REAL-TIME DATA CARD (Replaces the screenshot) */
-    .telemetry-card { background: #000; border: 1px solid var(--border); padding: 25px; margin-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; }
-    .price-main { font-size: 56px; font-weight: bold; color: #fff; letter-spacing: -2px; }
-    .change-indicator { font-size: 24px; font-weight: bold; padding-bottom: 8px; }
+    .market-card { background: #000; border: 1px solid var(--border); padding: 30px; margin-top: 20px; display: flex; justify-content: space-between; align-items: flex-end; }
+    .price-val { font-size: 64px; font-weight: bold; letter-spacing: -3px; }
+    .change-val { font-size: 24px; font-weight: bold; padding-bottom: 10px; }
 
-    .asset-table { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 11px; }
-    .asset-table th { text-align: left; color: #556; padding: 10px; border-bottom: 1px solid var(--border); }
-    .asset-table td { padding: 12px 10px; border-bottom: 1px solid #161b22; }
-    .cat-tag { color: var(--neon); font-weight: bold; font-size: 9px; }
+    .asset-grid { width: 100%; margin-top: 20px; border-collapse: collapse; font-size: 11px; }
+    .asset-grid th { text-align: left; color: #556; padding: 12px; border-bottom: 2px solid var(--border); font-size: 10px; }
+    .asset-grid td { padding: 15px 12px; border-bottom: 1px solid #14181d; }
+    .type-pill { background: rgba(0, 255, 204, 0.1); color: var(--neon); padding: 4px 8px; font-weight: bold; font-size: 9px; }
   </style>
 </head>
 <body>
 
 <header id="header">
-  <div style="font-weight: bold; letter-spacing: 2px; color: var(--neon);">MACRO-NODE TERMINAL</div>
-  <div style="font-size:12px; color:#8b949e;">SYSTEM ARCHITECT: <b style="color:var(--neon)">SANJEEV JHA</b></div>
+  <div style="font-weight: bold; letter-spacing: 2px; color: var(--neon);">MACRO-NODE TERMINAL // INTEL_V4</div>
+  <div style="font-size:11px; color:#556;">SYSTEM ARCHITECT: <b style="color:var(--neon)">SANJEEV JHA</b></div>
 </header>
 
 <aside id="sidebar">
   <div class="country-header">
-    <img id="flag" src="" style="width: 60px; height: auto; border: 1px solid var(--border);">
-    <span id="c-name" class="country-name">STANDBY</span>
+    <img id="flag-img" src="" style="width: 70px; height: auto; box-shadow: 0 0 15px rgba(0,0,0,0.5);">
+    <span id="country-title" class="country-name">AWAITING INPUT</span>
   </div>
 
-  <div id="data-ui">
-    <span class="label">Strategic Regional Intelligence (Business/Finance)</span>
-    <div id="news-out"></div>
+  <div id="ui-content">
+    <span class="section-label">Geopolitical & Economic Intelligence</span>
+    <div id="news-feed"></div>
 
-    <span class="label">Benchmark Data: <span id="bench-label" style="color:var(--neon)">--</span></span>
-    <div class="telemetry-card">
+    <span class="section-label">Benchmark Performance: <span id="bench-name" style="color:var(--neon)">--</span></span>
+    <div class="market-card">
       <div>
-        <div id="ticker-label" style="color:#556; font-size:12px; margin-bottom: 5px;">--</div>
-        <div id="price" class="price-main">$0.00</div>
+        <div id="ticker-sym" style="color:#556; font-size:12px; margin-bottom:5px;">--</div>
+        <div id="price-main" class="price-val">$0.00</div>
       </div>
-      <div id="change" class="change-indicator">--</div>
+      <div id="change-main" class="change-val">--</div>
     </div>
 
-    <span class="label">Institutional Multi-Asset Portfolio</span>
-    <table class="asset-table">
+    <span class="section-label">Institutional Multi-Asset Portfolio</span>
+    <table class="asset-grid">
       <thead>
-        <tr><th>CATEGORY</th><th>ASSET IDENTIFIER</th><th>INSTRUMENT</th><th>RISK</th></tr>
+        <tr><th>ASSET CLASS</th><th>IDENTIFIER</th><th>INSTRUMENT</th><th>RISK PROFILE</th></tr>
       </thead>
-      <tbody id="asset-list"></tbody>
+      <tbody id="portfolio-body"></tbody>
     </table>
   </div>
 </aside>
@@ -76,35 +76,34 @@
     .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
     .atmosphereColor('#00ffcc').showAtmosphere(true);
 
-  async function loadTerminal(country) {
+  async function triggerTerminal(country) {
     sidebar.classList.add('active');
-    document.getElementById('c-name').innerText = country;
+    document.getElementById('country-title').innerText = country;
 
     try {
       const res = await fetch(`/api/terminal-data?country=${country}`);
       const data = await res.json();
 
-      document.getElementById('flag').src = data.flag;
-      document.getElementById('news-out').innerHTML = data.news.map(n => `<div class="news-card">${n}</div>`).join('');
-      document.getElementById('bench-label').innerText = data.bench;
-      document.getElementById('ticker-label').innerText = data.ticker;
-      document.getElementById('price').innerText = "$" + data.price;
+      document.getElementById('flag-img').src = data.flag;
+      document.getElementById('news-feed').innerHTML = data.news.map(n => `<div class="news-item">${n}</div>`).join('');
+      document.getElementById('bench-name').innerText = data.bench;
+      document.getElementById('ticker-sym').innerText = data.ticker;
+      document.getElementById('price-main').innerText = "$" + data.price;
       
       const change = parseFloat(data.change);
-      const indicator = document.getElementById('change');
-      indicator.style.color = change >= 0 ? '#00ff00' : '#ff3333';
-      indicator.innerHTML = (change >= 0 ? "▲ " : "▼ ") + Math.abs(change) + "%";
+      const cMain = document.getElementById('change-main');
+      cMain.style.color = change >= 0 ? '#00ff00' : '#ff3333';
+      cMain.innerHTML = (change >= 0 ? "▲ " : "▼ ") + Math.abs(change) + "%";
 
-      document.getElementById('asset-list').innerHTML = data.portfolio.map(p => `
+      document.getElementById('portfolio-body').innerHTML = data.portfolio.map(p => `
         <tr>
-          <td class="cat-tag">${p.cat}</td>
+          <td><span class="type-pill">${p.cat}</span></td>
           <td style="font-weight:bold;">${p.asset}</td>
           <td style="color:#8b949e">${p.type}</td>
           <td style="color:${p.risk === 'HIGH' ? 'var(--red)' : '#fff'}">${p.risk}</td>
         </tr>
       `).join('');
-
-    } catch (err) { console.log("DATA_FETCH_ERROR"); }
+    } catch (err) { console.error("Terminal Uplink Interrupted"); }
   }
 
   fetch('https://raw.githubusercontent.com/vasturiano/globe.gl/master/example/datasets/ne_110m_admin_0_countries.geojson')
@@ -112,7 +111,7 @@
       globe.polygonsData(data.features)
         .polygonStrokeColor(() => '#00ffcc')
         .polygonCapColor(() => 'rgba(0,255,204,0.02)')
-        .onPolygonClick(({ properties: p }) => loadTerminal(p.ADMIN));
+        .onPolygonClick(({ properties: p }) => triggerTerminal(p.ADMIN));
     });
 </script>
 </body>
