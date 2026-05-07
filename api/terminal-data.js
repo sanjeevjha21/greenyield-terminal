@@ -3,42 +3,42 @@ export default async function handler(req, res) {
   const GOOGLE_KEY = process.env.GOOGLE_API_KEY;
   const FINNHUB_KEY = process.env.FINNHUB_API_KEY;
 
-  // Real-time Sector Routing
+  // Real-time Mapping
   const tickers = {
-    "India": ["RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS", "ICICIBANK.NS"],
-    "United States of America": ["AAPL", "NVDA", "TSLA", "MSFT", "AMZN"],
-    "Germany": ["SAP.DE", "SIE.DE", "VOW3.DE", "DBK.DE", "BAS.DE"]
+    "India": "RELIANCE.NS",
+    "United States of America": "NVDA",
+    "China": "BABA",
+    "Germany": "SAP.DE",
+    "United Kingdom": "HSBA.L"
   };
-  const countryTickers = tickers[country] || ["AAPL", "GOOGL", "MSFT", "NVDA", "TSLA"];
+  const symbol = tickers[country] || "AAPL";
 
   try {
-    // 1. FETCH PRIMARY MARKET DATA
-    const stockRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${countryTickers[0]}&token=${FINNHUB_KEY}`);
-    const stockData = await stockRes.json();
-
-    // 2. AI DEEP SCAN (TOP 5s)
+    // 1. FAST AI UPLINK (Optimized to prevent timeout)
     const aiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GOOGLE_KEY}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        contents: [{ parts: [{ text: `You are a Bloomberg Intelligence Terminal. For ${country}, provide a detailed report:
-        1. TOP 5 HEADLINES: List 5 major geopolitical/economic news items.
-        2. TOP 5 TRENDS: List 5 macro trends (e.g., Green Energy shift, Inflation, AI growth).
-        3. TOP 5 INVESTMENT PICKS: List 5 specific assets/stocks with a Risk Level (Low/Med/High) and a 1-sentence logic.
-        Use a professional, high-density format.` }] }]
+        contents: [{ parts: [{ text: `Provide a Bloomberg-style briefing for ${country} in short bullet points:
+        - 5 LATEST NEWS HEADLINES
+        - 5 MACRO TRENDS
+        - 5 INVESTMENT PICKS with Risk Level (Low/Med/High)` }] }]
       })
     });
     const aiData = await aiRes.json();
-    const report = aiData.candidates?.[0]?.content?.parts?.[0]?.text || "FEED_TIMEOUT";
+    const report = aiData.candidates?.[0]?.content?.parts?.[0]?.text || "FEED_RETRY_REQUIRED";
+
+    // 2. MARKET DATA
+    const stockRes = await fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${FINNHUB_KEY}`);
+    const stockData = await stockRes.json();
 
     res.status(200).json({
       report: report,
-      primaryTicker: countryTickers[0],
+      symbol: symbol,
       price: stockData.c || "0.00",
-      change: stockData.dp || "0.00",
-      tickerList: countryTickers.join(", ")
+      change: stockData.dp || "0.00"
     });
   } catch (e) {
-    res.status(500).json({ error: "UPLINK_FAILURE" });
+    res.status(500).json({ error: "TIMEOUT_OR_CONNECTION_ERROR" });
   }
 }
