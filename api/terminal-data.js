@@ -21,30 +21,44 @@ export default async function handler(req, res) {
   const safeBench = config?.bench || "GLOBAL BENCHMARK";
 
   try {
-    // STRICT NEWS QUERY: Forces country name + finance terms to be in the Title/Description
-    const query = encodeURIComponent(`"${country}" AND (economy OR finance OR market OR stock OR geopolitics)`);
+    // STRICT NEWS QUERY: Exclude spam words directly in the API request
+    const query = encodeURIComponent(`"${country}" AND (economy OR finance OR market OR stock OR geopolitics OR "central bank") NOT (bundle OR discount OR sale OR software OR deal)`);
     
     const [newsRes, stockRes] = await Promise.all([
-      fetch(`https://newsapi.org/v2/everything?q=${query}&searchIn=title,description&sortBy=publishedAt&pageSize=5&apiKey=${NEWS_KEY}`),
+      fetch(`https://newsapi.org/v2/everything?q=${query}&searchIn=title,description&sortBy=publishedAt&pageSize=15&apiKey=${NEWS_KEY}`),
       fetch(`https://finnhub.io/api/v1/quote?symbol=${safeTicker}&token=${FINNHUB_KEY}`)
     ]);
 
     const newsData = await newsRes.json();
     const stock = await stockRes.json();
 
-    // FALLBACK LOGIC: If real news is zero, generate hyper-specific economic placeholders
-    let headlines = newsData.articles?.map(a => a.title).slice(0, 5) || [];
+    // STRICT JAVASCRIPT FILTERING: Eradicate "bullshit" ads (like the Visual Studio bundle)
+    const spamKeywords = ["bundle", "sale", "$", "discount", "promo", "deal", "microsoft", "visual studio", "buy now"];
+    
+    let headlines = [];
+    if (newsData.articles) {
+      headlines = newsData.articles
+        .filter(a => {
+          const titleLower = a.title.toLowerCase();
+          // 1. Must not contain spam words
+          const isSpam = spamKeywords.some(spam => titleLower.includes(spam));
+          // 2. Must explicitly mention the country to avoid generic global news bleeding in
+          const mentionsCountry = titleLower.includes(country.toLowerCase());
+          
+          return !isSpam && mentionsCountry;
+        })
+        .map(a => a.title)
+        .slice(0, 5); // Keep only the top 5 clean, hyper-relevant headlines
+    }
+
+    // NO FAKE NEWS: If we can't find real, relevant news for this specific country, we state it professionally.
     if (headlines.length === 0) {
       headlines = [
-        `Central Bank of ${country} outlines new inflation mitigation strategy`,
-        `Foreign Direct Investment shifts observed in ${country} industrial sector`,
-        `Cross-border trade agreements re-evaluated amidst regional volatility`,
-        `Energy infrastructure development accelerated in key economic zones`,
-        `Institutional capital inflow steady despite global macro headwinds`
+        `NO MAJOR GEOPOLITICAL OR ECONOMIC SHIFTS REPORTED FOR ${country.toUpperCase()} IN THE LAST 24 HOURS.`
       ];
     }
 
-    // THE 10-POINT STRATEGIC PORTFOLIO (5 Core + 5 ESG/Bond)
+    // THE 10-POINT STRATEGIC PORTFOLIO (Untouched as requested)
     const portfolio = [
       { cat: "EQUITY", asset: safeTicker, inst: "Spot", risk: "MOD" },
       { cat: "DERIVATIVE", asset: `${safeTicker} CALL`, inst: "Option", risk: "HIGH" },
